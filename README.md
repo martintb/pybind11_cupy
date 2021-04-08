@@ -7,7 +7,6 @@ An example of passing cupy arrays directly to C++/CUDA. The current example allo
 $ cmake .
 $ make
 $ python test.py
-`100000000``
 ```
 
 
