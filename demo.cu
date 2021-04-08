@@ -2,10 +2,9 @@
 #include <math.h>
 #include <cuda_runtime.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-
 namespace py = pybind11;
 
+// Error checking macro
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
 {
@@ -16,7 +15,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
    }
 }
 
-// Kernel function to add the elements of two arrays
+// CUDA kernel function to add the elements of two arrays
 __global__
 void cuadd(int n, float *x, float *y, float *z)
 {
@@ -26,12 +25,13 @@ void cuadd(int n, float *x, float *y, float *z)
     z[i] = x[i] + y[i];
 }
 
-int pyadd(int N, size_t px, size_t py, size_t pz)
+// Function to be called by Python
+void pyadd(int N, size_t px, size_t py, size_t pz)
 {
 
-  float *x = (float*) px;
-  float *y = (float*) py;
-  float *z = (float*) pz;
+  float *x = reinterpret_cast<float*> (px);
+  float *y = reinterpret_cast<float*> (py);
+  float *z = reinterpret_cast<float*> (pz);
 
   // Run kernel on GPU
   int blockSize = 256;
@@ -41,11 +41,11 @@ int pyadd(int N, size_t px, size_t py, size_t pz)
   // Wait for GPU to finish before accessing on host
   gpuErrchk( cudaPeekAtLastError() );
   gpuErrchk( cudaDeviceSynchronize() );
-
-  return 0;
 }
 
+// This is the code to expose the pyadd function to Python
 PYBIND11_MODULE(demo, m) {
-        m.doc() = "pybind11 example plugin"; // optional module docstring
-        m.def("pyadd", &pyadd, "A function which adds two cupy arrays");
+  m.doc() = "pybind11 example plugin"; // optional module docstring
+  m.def("pyadd", &pyadd, "A function which adds two cupy arrays");
 }
+
