@@ -16,8 +16,10 @@ print(f'Used memory in CuPy memory pool: {mempool.used_bytes()/1024/1024:4.0f} M
 print(f'Total memory in CuPy memory pool: {mempool.total_bytes()/1024/1024:4.0f} Mb')
 print()
 
+print(x.__cuda_array_interface__)
+
 print('Adding x to y and storing result in z...')
-demo.pyadd(N,x.data.ptr,y.data.ptr,z.data.ptr)
+demo.pyadd(x,y,z)
 print('x:',x)
 print('y:',y)
 print('z:',z)
