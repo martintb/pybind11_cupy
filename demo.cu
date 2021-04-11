@@ -35,6 +35,7 @@ void pyadd(
     )
 {
   // Access the first element of x.shape and cast to c++ type
+  // shape attribute MUST be cast to tuple before accessing
   auto N = cupy_x.attr("shape").cast<py::tuple>()[0].cast<int>();
 
   // Extract the pointer ints from the cupy arrays
